@@ -59,4 +59,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     average_speed_calc = AverageSpeedCalculator()
     average_speed_calc.show()
-    app.exec()
+    sys.exit(app.exec())
