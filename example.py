@@ -1,3 +1,5 @@
+# pylint: disable=E0611
+
 import sys
 from PyQt6.QtWidgets import (QApplication,
                              QPushButton,
