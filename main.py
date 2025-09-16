@@ -6,7 +6,8 @@ from PyQt6.QtWidgets import (
     QWidget,
     QGridLayout,
     QLineEdit,
-    QMainWindow
+    QMainWindow,
+    QTableWidget
 )
 
 from PyQt6.QtGui import QAction
@@ -18,6 +19,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Studend Management System")
 
+        # menubar
+
         file_menu_item = self.menuBar().addMenu("&File")
         help_menu_item = self.menuBar().addMenu("&Help")
 
@@ -26,6 +29,15 @@ class MainWindow(QMainWindow):
 
         about_action = QAction('About', self)
         help_menu_item.addAction(about_action)
+
+        # table
+        self.table = QTableWidget() #central widget
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(('Id', 'Name', 'Course', 'Mobile'))
+        self.setCentralWidget(self.table)
+
+    def load_data(self):
+        self.table
 
 
 app = QApplication(sys.argv)
