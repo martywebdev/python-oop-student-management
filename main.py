@@ -1,6 +1,7 @@
+from calendar import c
+import os
 import sqlite3
 import sys
-from tkinter import dialog
 
 from PyQt6.QtWidgets import (
     QApplication, QPushButton, QLabel,
@@ -14,6 +15,9 @@ from PyQt6.QtWidgets import (
 )
 
 from PyQt6.QtGui import QAction, QColor
+
+from controller.student_controller import StudentController
+from view.student.main import Student
 
 
 class MainWindow(QMainWindow):
@@ -170,8 +174,14 @@ class InsertDialog(QDialog):
             main.load_data()
 
 
+# app = QApplication(sys.argv)
+# main = MainWindow()
+# main.load_data()
+# main.show()
+# sys.exit(app.exec())
+print(os.getcwd())
 app = QApplication(sys.argv)
-main = MainWindow()
-main.load_data()
-main.show()
+controller = StudentController()
+student_view = Student(controller)
+student_view.show()
 sys.exit(app.exec())
