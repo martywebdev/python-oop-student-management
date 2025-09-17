@@ -10,10 +10,10 @@ from PyQt6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QDialog,
-    QVBoxLayout
+    QVBoxLayout,
 )
 
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QColor
 
 
 class MainWindow(QMainWindow):
@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
 
         file_menu_item = self.menuBar().addMenu("&File")
         help_menu_item = self.menuBar().addMenu("&Help")
+        search_menu_item = self.menuBar().addMenu("&Search")
 
         add_student_action = QAction("Add Student", self)
         add_student_action.triggered.connect(self.insert)
@@ -33,6 +34,10 @@ class MainWindow(QMainWindow):
 
         about_action = QAction('About', self)
         help_menu_item.addAction(about_action)
+
+        search_action = QAction("Search", self)
+        search_action.triggered.connect(self.show_search_dialog)
+        search_menu_item.addAction(search_action)
 
         # table
         self.table = QTableWidget()  # central widget
@@ -49,7 +54,7 @@ class MainWindow(QMainWindow):
         result = connection.execute('SELECT * FROM students')
         print(result)
         # populate the table
-        self.table.setRowCount(0) # resetter
+        self.table.setRowCount(0)  # resetter
         for row_number, row_data in enumerate(result):  # this is the list
             self.table.insertRow(row_number)
             # this is tuples inside the list
@@ -61,6 +66,63 @@ class MainWindow(QMainWindow):
     def insert(self):
         dialog = InsertDialog()
         dialog.exec()
+
+    def show_search_dialog(self):
+        search_dialog = QDialog(self)
+        search_dialog.setWindowTitle("Search Dialog")
+        search_dialog.setFixedWidth(200)
+        search_dialog.setFixedHeight(100)
+
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Search"))
+        search_input = QLineEdit()
+        layout.addWidget(search_input)
+
+        button = QPushButton('Submit')
+        button.clicked.connect(lambda: self.search(search_input.text()))
+        layout.addWidget(button)
+
+        search_dialog.setLayout(layout)
+
+        # For modal dialog:
+        search_dialog.exec()
+
+    def search(self, search_string):
+        with sqlite3.connect("database.db") as conn:
+            result = conn.execute(
+                "SELECT * FROM students where name like ? ", (f"%{search_string}%",))
+            rows = result.fetchall()
+
+            print(rows)
+            # reset all highlights first
+            for row in range(self.table.rowCount()):
+                for col in range(self.table.columnCount()):
+                    item = self.table.item(row, col)
+                    if item:
+                        item.setBackground(QColor("white"))  # reset to default
+
+            # highlight matches
+               # highlight matches (starting with search_string)
+            for row in range(self.table.rowCount()):
+                for col in range(self.table.columnCount()):
+                    item = self.table.item(row, col)
+                    if item and item.text().lower().startswith(search_string.lower()):
+                        # highlight the whole row
+                        for c in range(self.table.columnCount()):
+                            match_item = self.table.item(row, c)
+                            if match_item:
+                                match_item.setBackground(QColor("yellow"))
+            # populate the table with search results
+
+            # self.table.setRowCount(0)
+            # for row_number, row_data in enumerate(rows):
+            #     self.table.insertRow(row_number)
+            #     for column_number, data in enumerate(row_data):
+            #         self.table.setItem(
+            #             row_number,
+            #             column_number,
+            #             QTableWidgetItem(str(data))
+            #         )
 
 
 class InsertDialog(QDialog):
