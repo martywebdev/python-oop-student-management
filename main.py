@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (
 )
 
 from controller.student_controller import StudentController
-from view.student.main import  StudentWindow
+from views.student.main import  StudentWindow
 
 
 app = QApplication(sys.argv)

@@ -225,3 +225,5 @@ $RECYCLE.BIN/
 
 database.db
 database.db-journal
+data
+storage

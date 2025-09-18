@@ -5,13 +5,14 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
 )
 
-from PyQt6.QtGui import QAction, QColor
+from PyQt6.QtGui import QAction, QIcon
 from components.alert import Alert
 from components.box_layout import BoxLayout
 from components.dialog import Dialog
 from components.select import Select
 from components.table import Table
 
+from components.toolbar import Toolbar
 from model.student import Student
 
 
@@ -28,14 +29,14 @@ class StudentWindow(QMainWindow):
         help_menu_item = self.menuBar().addMenu("&Help")
         search_menu_item = self.menuBar().addMenu("&Search")
 
-        add_student_action = QAction("Add Student", self)
+        add_student_action = QAction(QIcon("resources/icons/download.png"), "Add Student", self)
         add_student_action.triggered.connect(self.store)
         file_menu_item.addAction(add_student_action)
 
         about_action = QAction('About', self)
         help_menu_item.addAction(about_action)
 
-        search_action = QAction("Search", self)
+        search_action = QAction(QIcon("resources/icons/search.png"), "Search", self)
         search_action.triggered.connect(self.search)
         search_menu_item.addAction(search_action)
 
@@ -43,6 +44,12 @@ class StudentWindow(QMainWindow):
         self.table = Table(('Id', 'Name', 'Course', 'Mobile'))
         self.setCentralWidget(self.table)
         self.index()
+        
+        #toolbar
+        toolbar = Toolbar()
+        self.addToolBar(toolbar)
+        toolbar.addAction(add_student_action)
+        toolbar.addAction(search_action)
 
     def index(self):
         students = self.controller.index()
