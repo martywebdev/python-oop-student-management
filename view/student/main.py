@@ -1,21 +1,19 @@
 from PyQt6.QtWidgets import (
-    QApplication, QPushButton, QLabel,
-    QWidget, QComboBox, QGridLayout,
+    QPushButton,
     QLineEdit,
     QMainWindow,
-    QTableWidget,
     QTableWidgetItem,
-    QDialog,
-    QVBoxLayout,
 )
 
 from PyQt6.QtGui import QAction, QColor
+from components.alert import Alert
 from components.box_layout import BoxLayout
 from components.dialog import Dialog
 from components.select import Select
 from components.table import Table
 
 from model.student import Student
+
 
 class StudentWindow(QMainWindow):
 
@@ -24,8 +22,8 @@ class StudentWindow(QMainWindow):
         self.controller = controller
         self.setWindowTitle("Studend Management System")
         self.setMinimumSize(800, 600)
-        # menubar
 
+        # menubar
         file_menu_item = self.menuBar().addMenu("&File")
         help_menu_item = self.menuBar().addMenu("&Help")
         search_menu_item = self.menuBar().addMenu("&Search")
@@ -48,12 +46,7 @@ class StudentWindow(QMainWindow):
 
     def index(self):
         students = self.controller.index()
-        print("DEBUG students:", students)
-        self.table.setRowCount(len(students))
-        for row_idx, row in enumerate(students):
-            for col_idx, value in enumerate(row):
-                self.table.setItem(
-                    row_idx, col_idx, QTableWidgetItem(str(value)))
+        self.populate_table(students)
 
     def store(self):
         dialog = Dialog('Add Student')
@@ -76,7 +69,7 @@ class StudentWindow(QMainWindow):
                 self.controller.store(student)           # pass model
                 self.index()
                 dialog.accept()
-                
+
         button.clicked.connect(handle_register)
 
         mobile = QLineEdit()
@@ -96,4 +89,47 @@ class StudentWindow(QMainWindow):
         dialog.exec()
 
     def search(self):
-        pass
+        dialog = Dialog('Add Student')
+
+        search_text = QLineEdit()
+        search_text.setPlaceholderText("Search")
+        button = QPushButton('Search')
+        reset_button = QPushButton("Reset")
+
+        def handle_search():
+            keyword = search_text.text()
+            if keyword.strip():
+                results = self.controller.search(keyword)
+                if results:
+                    self.populate_table(results)
+                else:
+                    Alert.info(self, "No students found matching your search")
+                dialog.accept() #closing dialog
+
+        def handle_reset():
+            self.populate_table(self.controller.index())
+            dialog.accept()
+            # close dialog
+        button.clicked.connect(handle_search)
+        reset_button.clicked.connect(handle_reset)
+        
+        layout = BoxLayout(
+            search_text,
+            button, 
+            reset_button
+        )
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(10)
+        dialog.setLayout(layout)
+        dialog.exec()
+
+    def populate_table(self, students):
+        self.table.setRowCount(len(students)) 
+        for row_number, student in enumerate(students):
+            self.table.setItem(row_number, 0, QTableWidgetItem(str(row_number+1)))  # fake ID
+            self.table.setItem(row_number, 1, QTableWidgetItem(student.name))
+            self.table.setItem(row_number, 2, QTableWidgetItem(student.course))
+            self.table.setItem(row_number, 3, QTableWidgetItem(str(student.mobile)))
+
+
+
