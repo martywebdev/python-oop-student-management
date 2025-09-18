@@ -10,15 +10,20 @@ from PyQt6.QtWidgets import (
 )
 
 from PyQt6.QtGui import QAction, QColor
+from components.box_layout import BoxLayout
+from components.dialog import Dialog
+from components.select import Select
+from components.table import Table
 
+from model.student import Student
 
-class Student(QMainWindow):
+class StudentWindow(QMainWindow):
 
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
         self.setWindowTitle("Studend Management System")
-
+        self.setMinimumSize(800, 600)
         # menubar
 
         file_menu_item = self.menuBar().addMenu("&File")
@@ -37,13 +42,7 @@ class Student(QMainWindow):
         search_menu_item.addAction(search_action)
 
         # table
-        self.table = QTableWidget()  # central widget
-        self.table.setFixedWidth(600)
-        self.table.setFixedHeight(600)
-        self.table.setColumnCount(4)
-        self.table.setHorizontalHeaderLabels(
-            ('Id', 'Name', 'Course', 'Mobile'))
-        self.table.verticalHeader().setVisible(False)  # hide index
+        self.table = Table(('Id', 'Name', 'Course', 'Mobile'))
         self.setCentralWidget(self.table)
         self.index()
 
@@ -57,7 +56,44 @@ class Student(QMainWindow):
                     row_idx, col_idx, QTableWidgetItem(str(value)))
 
     def store(self):
-        pass
+        dialog = Dialog('Add Student')
+
+        student_name = QLineEdit()
+        student_name.setPlaceholderText("name")
+
+        courses = Select(['Computer Science', 'Accounting', "Cosmetology"])
+
+        button = QPushButton('Register')
+
+        def handle_register():
+
+            name = student_name.text()
+            course = courses.currentText()
+            phone = mobile.text()
+
+            if name.strip():
+                student = Student(name, course, phone)   # wrap data into model
+                self.controller.store(student)           # pass model
+                self.index()
+                dialog.accept()
+                
+        button.clicked.connect(handle_register)
+
+        mobile = QLineEdit()
+        mobile.setPlaceholderText("Mobile")
+
+        layout = BoxLayout(
+            student_name,
+            courses,
+            mobile,
+            button
+        )
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(10)
+        dialog.setLayout(layout)
+        dialog.adjustSize()
+        # For modal dialog:
+        dialog.exec()
 
     def search(self):
         pass

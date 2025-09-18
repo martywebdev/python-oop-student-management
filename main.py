@@ -17,7 +17,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QAction, QColor
 
 from controller.student_controller import StudentController
-from view.student.main import Student
+from view.student.main import  StudentWindow
 
 
 class MainWindow(QMainWindow):
@@ -179,9 +179,9 @@ class InsertDialog(QDialog):
 # main.load_data()
 # main.show()
 # sys.exit(app.exec())
-print(os.getcwd())
+
 app = QApplication(sys.argv)
 controller = StudentController()
-student_view = Student(controller)
+student_view = StudentWindow(controller)
 student_view.show()
 sys.exit(app.exec())
