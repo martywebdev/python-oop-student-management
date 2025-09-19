@@ -60,7 +60,7 @@ class StudentWindow(QMainWindow):
         self.setStatusBar(status_bar)
 
         # detect a cell click
-        # self.table.cellClicked.connect(self.show)
+        self.table.cellClicked.connect(self.selected)
 
     def index(self):
         students = self.controller.index()
@@ -151,5 +151,5 @@ class StudentWindow(QMainWindow):
             self.table.setItem(
                 row_number, 3, QTableWidgetItem(str(student.mobile)))
 
-    def show(self):
-        pass
+    def selected(self, select):
+        print(select)
