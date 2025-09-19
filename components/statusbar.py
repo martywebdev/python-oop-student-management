@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QStatusBar
 
 
-class BoxLayout(QVBoxLayout):
+class StatusBar(QStatusBar):
 
     def __init__(self, *widgets):
         super().__init__()

@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QMainWindow,
     QTableWidgetItem,
+    QLabel
 )
 
 from PyQt6.QtGui import QAction, QIcon
@@ -10,6 +11,7 @@ from components.alert import Alert
 from components.box_layout import BoxLayout
 from components.dialog import Dialog
 from components.select import Select
+from components.statusbar import StatusBar
 from components.table import Table
 
 from components.toolbar import Toolbar
@@ -29,14 +31,16 @@ class StudentWindow(QMainWindow):
         help_menu_item = self.menuBar().addMenu("&Help")
         search_menu_item = self.menuBar().addMenu("&Search")
 
-        add_student_action = QAction(QIcon("resources/icons/download.png"), "Add Student", self)
+        add_student_action = QAction(
+            QIcon("resources/icons/download.png"), "Add Student", self)
         add_student_action.triggered.connect(self.store)
         file_menu_item.addAction(add_student_action)
 
         about_action = QAction('About', self)
         help_menu_item.addAction(about_action)
 
-        search_action = QAction(QIcon("resources/icons/search.png"), "Search", self)
+        search_action = QAction(
+            QIcon("resources/icons/search.png"), "Search", self)
         search_action.triggered.connect(self.search)
         search_menu_item.addAction(search_action)
 
@@ -44,12 +48,19 @@ class StudentWindow(QMainWindow):
         self.table = Table(('Id', 'Name', 'Course', 'Mobile'))
         self.setCentralWidget(self.table)
         self.index()
-        
-        #toolbar
+
+        # toolbar
         toolbar = Toolbar()
         self.addToolBar(toolbar)
         toolbar.addAction(add_student_action)
         toolbar.addAction(search_action)
+
+        # status bar
+        status_bar = StatusBar()
+        self.setStatusBar(status_bar)
+
+        # detect a cell click
+        # self.table.cellClicked.connect(self.show)
 
     def index(self):
         students = self.controller.index()
@@ -111,7 +122,7 @@ class StudentWindow(QMainWindow):
                     self.populate_table(results)
                 else:
                     Alert.info(self, "No students found matching your search")
-                dialog.accept() #closing dialog
+                dialog.accept()  # closing dialog
 
         def handle_reset():
             self.populate_table(self.controller.index())
@@ -119,10 +130,10 @@ class StudentWindow(QMainWindow):
             # close dialog
         button.clicked.connect(handle_search)
         reset_button.clicked.connect(handle_reset)
-        
+
         layout = BoxLayout(
             search_text,
-            button, 
+            button,
             reset_button
         )
         layout.setContentsMargins(15, 15, 15, 15)
@@ -131,12 +142,14 @@ class StudentWindow(QMainWindow):
         dialog.exec()
 
     def populate_table(self, students):
-        self.table.setRowCount(len(students)) 
+        self.table.setRowCount(len(students))
         for row_number, student in enumerate(students):
-            self.table.setItem(row_number, 0, QTableWidgetItem(str(row_number+1)))  # fake ID
+            self.table.setItem(row_number, 0, QTableWidgetItem(
+                str(row_number+1)))  # fake ID
             self.table.setItem(row_number, 1, QTableWidgetItem(student.name))
             self.table.setItem(row_number, 2, QTableWidgetItem(student.course))
-            self.table.setItem(row_number, 3, QTableWidgetItem(str(student.mobile)))
+            self.table.setItem(
+                row_number, 3, QTableWidgetItem(str(student.mobile)))
 
-
-
+    def show(self):
+        pass
