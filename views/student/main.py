@@ -1,3 +1,4 @@
+from encodings.punycode import T
 from PyQt6.QtWidgets import (
     QPushButton,
     QLineEdit,
@@ -15,6 +16,8 @@ from components.statusbar import StatusBar
 from components.table import Table
 
 from components.toolbar import Toolbar
+from controller import student_controller
+from model import student
 from model.student import Student
 
 
@@ -56,11 +59,17 @@ class StudentWindow(QMainWindow):
         toolbar.addAction(search_action)
 
         # status bar
-        status_bar = StatusBar()
-        self.setStatusBar(status_bar)
+        self.status_bar = StatusBar()
+        self.setStatusBar(self.status_bar)
 
         # detect a cell click
+        self.selected_id = None
         self.table.cellClicked.connect(self.selected)
+
+        self.edit_button = QPushButton("Edit Record")
+        self.status_bar.addWidget(self.edit_button)
+        self.edit_button.clicked.connect(lambda _: self.edit(self.selected_id))
+        self.edit_button.setEnabled(False)
 
     def index(self):
         students = self.controller.index()
@@ -151,5 +160,14 @@ class StudentWindow(QMainWindow):
             self.table.setItem(
                 row_number, 3, QTableWidgetItem(str(student.mobile)))
 
-    def selected(self, select):
-        print(select)
+    def selected(self, row, column):
+
+        # print(row, column)
+        self.selected_id = self.table.item(row, 0).text()
+        self.edit_button.setEnabled(True)
+
+    def edit(self, selected):
+        student = self.controller.show(selected)
+        print(student)
+        dialog = Dialog(f"Edit Student {selected}")
+        dialog.exec()

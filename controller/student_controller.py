@@ -1,3 +1,4 @@
+from sqlite3 import Cursor
 from database.database import Database
 from model.student import Student
 
@@ -20,6 +21,11 @@ class StudentController:
         query = "SELECT * FROM students WHERE name LIKE ?"
         cursor = self.db.execute(query, (f"%{keyword}%",))
         return [Student(*row[1:4]) for row in cursor.fetchall()]
+    
+    def show(self, student_id):
+        query = "SELECT * FROM students where id = ?"
+        cursor = self.db.execute(query, (student_id))
+        return [Student(*row[1:4]) for row in cursor.fetchone()]
 
 if __name__ == "__main__":
     controller = StudentController()
