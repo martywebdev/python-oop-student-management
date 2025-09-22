@@ -1,15 +1,25 @@
 import os
 import sqlite3
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Database:
     def __init__(self):
-        # cross-platform app data directory
-        app_dir = Path.home() / ".student_management"
-        app_dir.mkdir(parents=True, exist_ok=True)
 
-        self.db_path = app_dir / "database.db"
+        env = os.getenv("APP_ENV", "dev")
+
+        if env == "dev":
+            self.db_path = Path("data/database.db")
+        else:
+
+            # cross-platform app data directory
+            app_dir = Path.home() / ".student_management"
+            app_dir.mkdir(parents=True, exist_ok=True)
+
+            self.db_path = app_dir / "database.db"
 
         # connect with row factory for dict-like access
         self.connection = sqlite3.connect(self.db_path)
