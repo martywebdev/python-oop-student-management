@@ -27,4 +27,9 @@ class StudentController:
 
     def update(self, student_id: int, student: Student):
         query = "UPDATE students SET name = ?, course = ?, mobile = ? WHERE id = ?"
-        self.db.execute(query, (student.name, student.course, student.mobile, student_id))
+        self.db.execute(query, (student.name, student.course,
+                        student.mobile, student_id))
+
+    def delete(self, student_id: int):
+        query = "DELETE FROM students WHERE id = ?"
+        self.db.execute(query, (student_id,))

@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QMessageBox
 
+
 class Alert:
     @staticmethod
     def info(parent, message, title="Info"):
@@ -24,3 +25,13 @@ class Alert:
         msg_box.setText(message)
         msg_box.setIcon(QMessageBox.Icon.Critical)
         msg_box.exec()
+
+    @staticmethod
+    def confirm(parent, message):
+        reply = QMessageBox.question(
+            parent,
+            "Confirm Delete",
+            message,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        return reply == QMessageBox.StandardButton.Yes

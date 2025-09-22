@@ -68,6 +68,11 @@ class StudentWindow(QMainWindow):
         self.edit_button.clicked.connect(self.edit)
         self.edit_button.setEnabled(False)
 
+        self.delete_button = QPushButton("Delete Record")
+        self.status_bar.addWidget(self.delete_button)
+        self.delete_button.clicked.connect(self.delete)
+        self.delete_button.setEnabled(False)
+
     def index(self):
         students = self.controller.index()
         self.populate_table(students)
@@ -139,14 +144,17 @@ class StudentWindow(QMainWindow):
     def populate_table(self, students):
         self.table.setRowCount(len(students))
         for row_number, student in enumerate(students):
-            self.table.setItem(row_number, 0, QTableWidgetItem(str(student.id)))
+            self.table.setItem(
+                row_number, 0, QTableWidgetItem(str(student.id)))
             self.table.setItem(row_number, 1, QTableWidgetItem(student.name))
             self.table.setItem(row_number, 2, QTableWidgetItem(student.course))
-            self.table.setItem(row_number, 3, QTableWidgetItem(str(student.mobile)))
+            self.table.setItem(
+                row_number, 3, QTableWidgetItem(str(student.mobile)))
 
     def selected(self, row, column):
         self.selected_id = int(self.table.item(row, 0).text())
         self.edit_button.setEnabled(True)
+        self.delete_button.setEnabled(True)
 
     def edit(self):
         student = self.controller.show(self.selected_id)
@@ -181,3 +189,15 @@ class StudentWindow(QMainWindow):
         layout.setSpacing(10)
         dialog.setLayout(layout)
         dialog.exec()
+
+    def delete(self):
+        if not self.selected_id:
+            return
+
+        confirm = Alert.confirm(self, f"Delete student ID {self.selected_id}?")
+        if confirm:  # Alert.confirm should return True/False
+            self.controller.delete(self.selected_id)
+            self.index()  # refresh table
+            self.selected_id = None
+            self.edit_button.setEnabled(False)
+            self.delete_button.setEnabled(False)
