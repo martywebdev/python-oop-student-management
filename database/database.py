@@ -1,9 +1,18 @@
+import os
 import sqlite3
+from pathlib import Path
 
 
 class Database:
     def __init__(self):
-        self.connection = sqlite3.connect("data/database.db")
+        # cross-platform app data directory
+        app_dir = Path.home() / ".student_management"
+        app_dir.mkdir(parents=True, exist_ok=True)
+
+        self.db_path = app_dir / "database.db"
+
+        # connect with row factory for dict-like access
+        self.connection = sqlite3.connect(self.db_path)
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
 
