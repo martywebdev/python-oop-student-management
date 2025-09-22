@@ -12,7 +12,7 @@ def main():
     app = QApplication(sys.argv)
 
     # Run seeder (creates tables + default user if needed)
-    Seeder().seed_users()
+    Seeder().seed()
 
     # auth flow
     auth = AuthController()
